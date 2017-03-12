@@ -1,7 +1,7 @@
 # MultiTask
 FreePascal Multitask library
 
-Very simple to use MultiTask library for FreePascal.
+Very simple to use Queue based MultiTask library for FreePascal.
 
 <b>Some properties :</b><br/>
 - Simple<br/>
