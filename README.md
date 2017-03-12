@@ -33,9 +33,9 @@ Very simple to use MultiTask library for FreePascal.
 
 <b>Main Work :</b>
 
-  <add tasks to queue possible here><br/>
+  ...add tasks to queue possible here...<br/>
   MultiTask.Start;<br/>
-  <add another tasks to queue possible here><br/>
+  ...add another tasks to queue possible here...<br/>
   MultiTask.WaitFor;<br/>
 
 <b>Example of On_New_Work method :</b>
