@@ -118,8 +118,10 @@ type
 
 implementation
 
+{$IFDEF LOG}
 uses
   uLog_v4;
+{$ENDIF}
 
 { tMultiTaskThread }
 
@@ -386,8 +388,10 @@ begin
       except
         on E: Exception do
         begin
+          {$IFDEF LOG}
           Log('Exception in task  ' + task.AsPascalSourceString +
             ' !!! ' + E.Message + ' !!!');
+          {$ENDIF}
         end;
       end;
     finally

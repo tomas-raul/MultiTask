@@ -7,7 +7,9 @@ interface
 uses
   Classes,
   SysUtils,
+  {$IFDEF LOG}
   uLog_v4,
+  {$ENDIF}
   uCS;
 
 type
