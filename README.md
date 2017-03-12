@@ -79,10 +79,10 @@ MultiTask.Enqueue(tTaskMethod(@Load_Image),[id,fn],[tpHigh]); // enqueue Load_Im
  
  
 <b>Tested on :</b><br/>
-<b>Ubuntu 16.10</b><br/>
-- crosscompile from Windows, FPC 3.0.0, Lazarus 1.6.3, kernel 4.08,4.10.1, Ryzen 1800X,32Gb Ram, 256Gb NVMe ssd<br/><br/>
-<b>Ubuntu 17.04</b><br/>
-- crosscompile from Windows, FPC 3.0.0, Lazarus 1.6.3, kernel 4.08,4.10.1, Ryzen 1800X,32Gb Ram, 256Gb NVMe ssd<br/><br/>
-<b>Windows 8.1</b><br/>
-- partial test, compiled on Windows, FPC 3.0.0, Lazarus 1.6.3,i5-6500,16Gb Ran, 256Gb SSD<br/><br/>
+Ubuntu 16.10 - 
+(crosscompile from Windows, FPC 3.0.0, Lazarus 1.6.3, kernel 4.08,4.10.1, Ryzen 1800X,32Gb Ram, 256Gb NVMe ssd)<br/>
+Ubuntu 17.04 - 
+(crosscompile from Windows, FPC 3.0.0, Lazarus 1.6.3, kernel 4.08,4.10.1, Ryzen 1800X,32Gb Ram, 256Gb NVMe ssd)<br/>
+Windows 8.1 - 
+(partial test, compiled on Windows, FPC 3.0.0, Lazarus 1.6.3,i5-6500,16Gb Ran, 256Gb SSD)<br/>
  
