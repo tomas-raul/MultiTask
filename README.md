@@ -3,6 +3,8 @@ FreePascal Multitask library
 
 Very simple to use Queue based MultiTask library for FreePascal.
 
+This library using https://github.com/tomas-raul/CriticalSection
+
 <b>Some properties :</b><br/>
 - Simple<br/>
 - FPC Windows/Linux compatible<br/>
@@ -14,6 +16,7 @@ Very simple to use Queue based MultiTask library for FreePascal.
 
 <b>Some properties (planed, in near future) :</b><br/>
 - Pin Threads to cores<br/>
+- EnqueueUnique - not finaly usable
 - Before build method compilation - aplication which will build On_New_Work, and some methods directly <br/>
  
 
