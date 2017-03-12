@@ -3,7 +3,7 @@ FreePascal Multitask library
 
 Very simple to use MultiTask library for FreePascal.
 
-Some properties :
+<b>Some properties :</b>
 - Simple
 - FPC Windows/Linux compatible
 - Add task on run - you can enqueue task anytime
@@ -12,13 +12,13 @@ Some properties :
 - Tasks is normal Threads
 
 
-Some properties (planed, in near future) :
+<b>Some properties (planed, in near future) :</b>
 - Pin Threads to cores
 - Before build method compilation - aplication which will build On_New_Work, and some methods directly 
  
 
 
-Initialization of library :
+<b>Initialization of library :</b>
 
   MultiTask := tMultiTask.Create;
   MultiTask.On_Task_Run_Method:=@On_New_Work;    // main method of set parameters to NORMAL methods/procedures
@@ -26,19 +26,19 @@ Initialization of library :
   MultiTask.On_After_Task_Method:=@__On_After_Task_Method;
 
 
-Finalization :
+<b>Finalization :</b>
 
   MultiTask.Free;
 
 
-Main Work :
+<b>Main Work :</b>
 
   <add tasks to queue possible here>
   MultiTask.Start;
   <add another tasks to queue possible here>
   MultiTask.WaitFor;
 
-Example of On_New_Work method :
+<b>Example of On_New_Work method :</b>
 procedure tmyObject.On_New_Work(const method_name: string; const task: tMultiTaskItem);
 begin
    case method_name of
@@ -48,7 +48,7 @@ begin
 end;
 
 
-Enqueue task to queue :
+<b>Enqueue task to queue :</b>
 
 for enqueue method :
 
@@ -59,26 +59,22 @@ begin
    MultiTask.Enqueue(tTaskMethod(@Save_Image),[id,fn,img],[tpHigh]); // enqueue Load_Image method with param ID and filename with HighPriority
 end;
 
-
 use this :
 
 MultiTask.Enqueue(tTaskMethod(@Load_Image),[id,fn],[tpHigh]); // enqueue Load_Image method with param ID and filename with HighPriority
 
 
-
-
- What is :
+ <b>What is :</b>
  
  MultiTask - main class for automated running any task
  Task - simple method or procedure, simply doing some work - as normal method or procedure
  
- What to see :
+ <b>What to see :</b>
  
  Memory managment - When you enqeueue task with some objects as parameters, do not free this objects BEFORE task end - simple free this object near task end
  
  
-
-Tested on :
+<b>Tested on :</b>
 Ubuntu 16.10 - crosscompile from Windows, FPC 3.0.0, Lazarus 1.6.3
 Ubuntu 17.04 - crosscompile from Windows, FPC 3.0.0, Lazarus 1.6.3
 Windows 8.1 - partial test, compiled on Windows, FPC 3.0.0, Lazarus 1.6.3
