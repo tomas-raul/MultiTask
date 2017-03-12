@@ -22,8 +22,8 @@ Very simple to use MultiTask library for FreePascal.
 
   MultiTask := tMultiTask.Create;<br/>
   MultiTask.On_Task_Run_Method:=@On_New_Work;    // main method of set parameters to NORMAL methods/procedures<br/>
-  MultiTask.On_Before_Task_Method:=@__On_Before_Task_Method;<br/>
-  MultiTask.On_After_Task_Method:=@__On_After_Task_Method;<br/>
+  MultiTask.On_Before_Task_Method:=@__On_Before_Task_Method; // method BEFORE ANY Task is started - for logging and etc.<br/>
+  MultiTask.On_After_Task_Method:=@__On_After_Task_Method; // method AFTER ANY Task is done - for logging and etc.<br/>
 
 
 <b>Finalization :</b><br/>
