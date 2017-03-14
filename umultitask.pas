@@ -16,6 +16,7 @@ uses
   {$linklib c}
   ctypes,
   {$ENDIF}
+  uCS,
   uMultiTaskQueue;
 
 type
@@ -27,16 +28,22 @@ type
   tOn_BeforeAfter_Task_Method = procedure(const task: tMultiTaskItem;
     const thrd: tMultiTaskThread) of object;
 
+  tOnExceptionMethod = procedure (const Task : tMultiTaskItem; const e: Exception) of object;
+  tOnLogMethod = procedure (const s : string) of object;
+
   { tMultiTaskThread }
 
   tMultiTaskThread = class(tThread)
   private
+    CS : tCS;
     fID: integer;
     fMultiTask: tMultiTask;
     fHaveNewWork: PRTLEvent;
-    fWorking: boolean;
+    fTask: tMultiTaskItem;
 
-    procedure _Working;
+    function getTask: tMultiTaskItem;
+    procedure setTask(AValue: tMultiTaskItem);
+    procedure _Working(const Task : tMultiTaskItem);
     procedure _Sleeping;
   public
     constructor Create(MultiTask: tMultiTask);
@@ -44,11 +51,13 @@ type
     procedure Execute; override;
 
     function Working: boolean;
+    function WorkingOn(const Task: tMultiTaskItem): boolean;
 
     procedure Wake_Up_For_New_Work();
     procedure Sleep_To_New_Work();
 
     property ID: integer read fID;
+    property Task : tMultiTaskItem read getTask write setTask;
 
   end;
 
@@ -56,6 +65,8 @@ type
 
   tMultiTask = class
   private
+    fOnException: tOnExceptionMethod;
+    fOnLog: tOnLogMethod;
     fOn_Before_Task_Method: tOn_BeforeAfter_Task_Method;
     fOn_After_Task_Method: tOn_BeforeAfter_Task_Method;
     fOn_Task_Run_Method: tOn_Task_Start_Method;
@@ -93,6 +104,9 @@ type
     procedure Enqueue(const proc: tTaskProc; const params: array of const; const flags : tMultitaskEnQueueFlags = [teLast]);
     procedure Enqueue(const method: tTaskMethod; const params: array of const; const flags : tMultitaskEnQueueFlags = [teLast]);
 
+    function Thread_Running_Count : Byte;
+    function isTaskRunning(const Data: tMultiTaskItem): boolean;
+
     property Cores_Count: byte read getCores_Count;
     property Thread_Count: byte read fThread_Count write setThread_Count;
     property Pin_Thread_To_Core: boolean read fPin_Thread_To_Core
@@ -114,11 +128,14 @@ type
       read fOn_Task_Run_Proc write setOn_Task_Run_Proc;
     property On_Task_Run_Method: tOn_Task_Start_Method
       read fOn_Task_Run_Method write setOn_Task_Run_Method;
+
+    property OnLog : tOnLogMethod read fOnLog write fOnLog;
+    property OnException : tOnExceptionMethod read fOnException write fOnException;
   end;
 
 implementation
 
-{$IFDEF LOG}
+{$IFDEF MultiTaskLOG}
 uses
   uLog_v4;
 {$ENDIF}
@@ -128,6 +145,7 @@ uses
 constructor tMultiTaskThread.Create(MultiTask: tMultiTask);
 begin
   inherited Create(True);
+  CS := InitCS;
   FreeOnTerminate := False;
   fHaveNewWork := RTLEventCreate;
   fMultiTask := MultiTask;
@@ -135,6 +153,7 @@ end;
 
 destructor tMultiTaskThread.Destroy;
 begin
+  CS.Free;
   RTLeventdestroy(fHaveNewWork);
   inherited Destroy;
 end;
@@ -145,9 +164,34 @@ begin
     fMultiTask.Thread_Work(self);
 end;
 
+function tMultiTaskThread.getTask: tMultiTaskItem;
+begin
+   CS.Enter('getTask');
+   try
+     result := fTask;
+   finally
+     CS.Leave;
+   end;
+end;
+
+procedure tMultiTaskThread.setTask(AValue: tMultiTaskItem);
+begin
+  CS.Enter('setTask');
+  try
+    fTask := AValue;
+  finally
+    CS.Leave;
+  end;
+end;
+
 procedure tMultiTaskThread._Sleeping;
 begin
-  fWorking := False;
+  CS.Enter('Work done');
+  try
+   fTask := nil;
+  finally
+    CS.Leave;
+  end;
 end;
 
 procedure tMultiTaskThread.Sleep_To_New_Work;
@@ -163,12 +207,32 @@ end;
 
 function tMultiTaskThread.Working: boolean;
 begin
-  Result := fWorking;
+  CS.Enter('Are we Working ?');
+  try
+    Result := fTask <> nil;
+  finally
+    CS.Leave;
+  end;
 end;
 
-procedure tMultiTaskThread._Working;
+function tMultiTaskThread.WorkingOn(const Task : tMultiTaskItem) : boolean;
 begin
-  fWorking := True;
+  CS.Enter('Are we Working on task X ?');
+  try
+    Result := (fTask <> nil) and (Task.AsPascalSourceString = self.ftask.AsPascalSourceString);
+  finally
+    CS.Leave;
+  end;
+end;
+
+procedure tMultiTaskThread._Working(const Task: tMultiTaskItem);
+begin
+  CS.Enter('New work arived');
+  try
+    fTask := Task;
+  finally
+    CS.Leave;
+  end;
 end;
 
 { tMultiTask }
@@ -178,7 +242,7 @@ begin
   inherited;
   fAnyThreadDoneWork := RTLEventCreate;
   fThreadList := TList.Create;
-  fTask_Queue := tMultiTaskQueue.Create;
+  fTask_Queue := tMultiTaskQueue.Create(self);
   fTask_Queue.On_New_Task := @On_New_Task_Enqeued;
   fPriorities_Enabled:=true;
   Thread_Count := Cores_Count;
@@ -196,21 +260,31 @@ end;
 procedure tMultiTask.Enqueue(const method: tTaskMethod; const params: array of const; const flags: tMultitaskEnQueueFlags);
 var fl : tMultitaskEnQueueFlags;
 begin
+  try
   fl := flags;
   if not fPriorities_Enabled then
    fl -= [teFirst,teHighPriority,teNormalPriority,teLowPriority,teLast];
 
   fTask_Queue.Enqueue(method, params, fl);
+  except
+    on E:Exception do
+     Log('Exception in Enqueue method : ' + E.Message);
+  end;
 end;
 
 procedure tMultiTask.Enqueue(const proc: tTaskProc; const params: array of const; const flags: tMultitaskEnQueueFlags);
 var fl : tMultitaskEnQueueFlags;
 begin
+  try
   fl := flags;
   if not fPriorities_Enabled then
    fl -= [teFirst,teHighPriority,teNormalPriority,teLowPriority,teLast];
 
   fTask_Queue.Enqueue(proc, params, fl);
+  except
+    on E:Exception do
+     Log('Exception in Enqueue procedure : ' + E.Message);
+  end;
 end;
 
 {$IFDEF Linux}
@@ -260,6 +334,22 @@ begin
     Result := 1;
   end;
 {$ENDIF}
+end;
+
+function tMultiTask.isTaskRunning(const Data: tMultiTaskItem): boolean;
+var
+  i: byte;
+  thrd: tMultiTaskThread;
+begin
+   result := false;
+   for i := 0 to fThreadList.Count - 1 do
+   begin
+     thrd := tMultiTaskThread(fThreadList[i]);
+     if (TThread.CurrentThread.ThreadID <> thrd.ThreadID) and (thrd.WorkingOn(Data)) then
+     begin
+       Exit(true);
+     end;
+   end;
 end;
 
 procedure tMultiTask.On_New_Task_Enqeued;
@@ -351,6 +441,21 @@ begin
   end;
 end;
 
+function tMultiTask.Thread_Running_Count: Byte;
+var
+  i,cnt: integer;
+  thrd: tMultiTaskThread;
+begin
+  cnt := 0;
+  for i := 0 to fThreadList.Count - 1 do
+  begin
+    thrd := tMultiTaskThread(fThreadList[i]);
+    if thrd.Working and (TThread.CurrentThread.ThreadID <> thrd.ThreadID) then
+      Inc(cnt);
+  end;
+  result := cnt;
+end;
+
 procedure tMultiTask.Thread_Work(thrd: tMultiTaskThread);
 var
   task: tMultiTaskItem;
@@ -359,7 +464,7 @@ begin
   while task <> nil do
   begin
     try
-      thrd._Working();
+      thrd._Working(Task);
       try
         if assigned(fOn_Before_Task_Method) then
           fOn_Before_Task_Method(task, thrd);
@@ -372,7 +477,9 @@ begin
           if task.Name <> '' then
             fOn_Task_Run_Method(task.Name, task)
           else
+          begin
             Stop;
+          end;
         end
         else
         if assigned(fOn_Task_Run_Proc) then
@@ -388,10 +495,8 @@ begin
       except
         on E: Exception do
         begin
-          {$IFDEF LOG}
-          Log('Exception in task  ' + task.AsPascalSourceString +
-            ' !!! ' + E.Message + ' !!!');
-          {$ENDIF}
+          if assigned(fOnException) then
+           fOnException(task,E);
         end;
       end;
     finally
@@ -414,10 +519,12 @@ begin
     begin
       thrd := tMultiTaskThread(fThreadList[i]);
       // mozna chyba, zkusit opravit
+      thrd.Start;
       thrd.Terminate;
       thrd.WaitFor;
       thrd.Free;
     end;
+    fThreadList.Clear;
 
     for i := 1 to fThread_Count do
     begin
@@ -437,16 +544,16 @@ begin
   for i := 0 to fThreadList.Count - 1 do
   begin
     thrd := tMultiTaskThread(fThreadList[i]);
-    if thrd.Working then
+    if thrd.Working and (TThread.CurrentThread.ThreadID <> thrd.ThreadID) then
       Exit(True);
   end;
 end;
 
 procedure tMultiTask.WaitFor;
 begin
-  while (fTask_Queue.Count > 0) or Any_Thread_Working do
+  while (fTask_Queue.Length > 0) or Any_Thread_Working do
   begin
-    RtlEventWaitFor(fAnyThreadDoneWork, 1000);
+    RtlEventWaitFor(fAnyThreadDoneWork, 5000);
     On_New_Task_Enqeued();
   end;
 end;
