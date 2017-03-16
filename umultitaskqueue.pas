@@ -139,10 +139,12 @@ type
     fCount: integer;
     CS: tCS;
     fOn_New_Task: tOn_New_Task;
+
     procedure Enqueue(const Data: tMultiTaskItem; const flags: tMultitaskEnQueueFlags);
     procedure EnqueueFirst(const Data: tMultiTaskItem; const OnlyUnique: boolean);
-    procedure EnqueuePriority(const Data: tMultiTaskItem; const tp: tTaskPriority;
-      const OnlyUnique: boolean);
+    procedure EnqueuePriority(const Data: tMultiTaskItem; const tp: tTaskPriority; const OnlyUnique: boolean);
+    procedure EnqueueLast(const Data: tMultiTaskItem; const OnlyUnique: boolean);
+
     procedure setOn_New_Task(AValue: tOn_New_Task);
     function _Exists(const Data: tMultiTaskItem): boolean;
     function _Exists_Or_Running(const Data: tMultiTaskItem): boolean;
@@ -154,21 +156,17 @@ type
     constructor Create(MultiTask: TObject);
     destructor Destroy; override;
 
-    procedure EnqueueLast(const Data: tMultiTaskItem; const OnlyUnique: boolean);
 
-    procedure Enqueue(const proc: tTaskProc; const method: tTaskMethod;
-      const params: array of const; const proc_before: tTaskProc = nil;
-      const method_before: tTaskMethod = nil; const params_before: array of const;
-      const proc_after: tTaskProc = nil; const method_after: tTaskMethod = nil;
-      const params_after: array of const;
-      const flags: tMultitaskEnQueueFlags = [teLast]);
+    procedure Enqueue(const proc: tTaskProc; const method: tTaskMethod; const params: array of const; const proc_before: tTaskProc;
+      const method_before: tTaskMethod; const params_before: array of const; const proc_after: tTaskProc; const method_after: tTaskMethod;
+  const params_after: array of const; const flags: tMultitaskEnQueueFlags);
     procedure Enqueue(const proc: tTaskProc; const params: array of const;
-      const flags: tMultitaskEnQueueFlags = [teLast]);
+      const flags: tMultitaskEnQueueFlags = [teLast]; const MinimumAvailableMemoryGb : Integer = -1);
     procedure Enqueue(const method: tTaskMethod; const params: array of const;
-      const flags: tMultitaskEnQueueFlags = [teLast]);
+      const flags: tMultitaskEnQueueFlags = [teLast]; const MinimumAvailableMemoryGb : Integer = -1);
 
     procedure Clear;
-    function DeQueue: tMultiTaskItem;
+    function DeQueue(const thrd : tObject): tMultiTaskItem;
     function Length: integer;
     function Exists(const Data: tMultiTaskItem): boolean;
 
@@ -182,20 +180,18 @@ type
 implementation
 
 uses TypInfo,
-  uMultiTask;
+  uMultiTask,
+  uMemory;
 
 { tMultiTaskItem }
 
-constructor tMultiTaskItem.Create(const proc: tTaskProc; const method: tTaskMethod;
-  const params: array of const);
+constructor tMultiTaskItem.Create(const proc: tTaskProc; const method: tTaskMethod; const params: array of const);
 begin
   Create(proc, method, params, nil, nil, [], nil, nil, []);
 end;
 
-constructor tMultiTaskItem.Create(const proc: tTaskProc; const method: tTaskMethod;
-  const params: array of const; const proc_before: tTaskProc;
-  const method_before: tTaskMethod; const params_before: array of const;
-  const proc_after: tTaskProc; const method_after: tTaskMethod;
+constructor tMultiTaskItem.Create(const proc: tTaskProc; const method: tTaskMethod; const params: array of const; const proc_before: tTaskProc;
+  const method_before: tTaskMethod; const params_before: array of const; const proc_after: tTaskProc; const method_after: tTaskMethod;
   const params_after: array of const);
 var
   before, after: tMultiTaskItem;
@@ -230,7 +226,6 @@ begin
 
   fBeforeRun := before;
   fAfterRun := after;
-
 end;
 
 constructor tMultiTaskItem.Create;
@@ -248,6 +243,19 @@ end;
 
 destructor tMultiTaskItem.Destroy;
 begin
+  SetLength(fInteger, 0);
+  SetLength(fBoolean, 0);
+  SetLength(fChar, 0);
+  SetLength(fExtended, 0);
+  SetLength(fString, 0);
+  SetLength(fPChar, 0);
+  SetLength(ftObject, 0);
+  SetLength(ftClass, 0);
+  SetLength(fString, 0);
+  SetLength(fCurrency, 0);
+  SetLength(fVariant, 0);
+  SetLength(fInt64, 0);
+  SetLength(fInterface, 0);
   inherited Destroy;
 end;
 
@@ -433,7 +441,6 @@ begin
   SetLength(fInt64, p);
   SetLength(fInterface, p);
 
-
   fParamsAsPascalString := '';
   for p := low(Data) to high(Data) do
   begin
@@ -553,10 +560,9 @@ begin
   Result := tmp;
 end;
 
-procedure tMultiTaskQueue.EnqueuePriority(const Data: tMultiTaskItem;
-  const tp: tTaskPriority; const OnlyUnique: boolean);
+procedure tMultiTaskQueue.EnqueuePriority(const Data: tMultiTaskItem; const tp: tTaskPriority; const OnlyUnique: boolean);
 var
-  QueueItem, after, tmpItem: pQueueItem;
+  QueueItem, tmpItem, after : pQueueItem;
 begin
   New(QueueItem);
   QueueItem^.Item := Data;
@@ -621,8 +627,7 @@ begin
   end;
 end;
 
-procedure tMultiTaskQueue.EnqueueFirst(const Data: tMultiTaskItem;
-  const OnlyUnique: boolean);
+procedure tMultiTaskQueue.EnqueueFirst(const Data: tMultiTaskItem; const OnlyUnique: boolean);
 var
   QueueItem, before: pQueueItem;
 begin
@@ -665,8 +670,7 @@ begin
   end;
 end;
 
-procedure tMultiTaskQueue.EnqueueLast(const Data: tMultiTaskItem;
-  const OnlyUnique: boolean);
+procedure tMultiTaskQueue.EnqueueLast(const Data: tMultiTaskItem; const OnlyUnique: boolean);
 var
   QueueItem: pQueueItem;
 begin
@@ -707,8 +711,7 @@ begin
   end;
 end;
 
-procedure tMultiTaskQueue.Enqueue(const Data: tMultiTaskItem;
-  const flags: tMultitaskEnQueueFlags);
+procedure tMultiTaskQueue.Enqueue(const Data: tMultiTaskItem; const flags: tMultitaskEnQueueFlags);
 begin
   if teFirst in flags then
   begin
@@ -741,11 +744,8 @@ begin
     EnqueueLast(Data, teUnique in flags);
 end;
 
-
-procedure tMultiTaskQueue.Enqueue(const proc: tTaskProc; const method: tTaskMethod;
-  const params: array of const; const proc_before: tTaskProc;
-  const method_before: tTaskMethod; const params_before: array of const;
-  const proc_after: tTaskProc; const method_after: tTaskMethod;
+procedure tMultiTaskQueue.Enqueue(const proc: tTaskProc; const method: tTaskMethod; const params: array of const; const proc_before: tTaskProc;
+  const method_before: tTaskMethod; const params_before: array of const; const proc_after: tTaskProc; const method_after: tTaskMethod;
   const params_after: array of const; const flags: tMultitaskEnQueueFlags);
 var
   i: integer;
@@ -764,19 +764,19 @@ begin
   end;
 end;
 
-procedure tMultiTaskQueue.Enqueue(const method: tTaskMethod;
-  const params: array of const; const flags: tMultitaskEnQueueFlags);
+procedure tMultiTaskQueue.Enqueue(const method: tTaskMethod; const params: array of const; const flags: tMultitaskEnQueueFlags;
+  const MinimumAvailableMemoryGb: Integer);
 begin
   Enqueue(nil, method, params, nil, nil, [], nil, nil, [], flags);
 end;
 
-procedure tMultiTaskQueue.Enqueue(const proc: tTaskProc;
-  const params: array of const; const flags: tMultitaskEnQueueFlags);
+procedure tMultiTaskQueue.Enqueue(const proc: tTaskProc; const params: array of const; const flags: tMultitaskEnQueueFlags;
+  const MinimumAvailableMemoryGb: Integer);
 begin
   Enqueue(proc, nil, params, nil, nil, [], nil, nil, [], flags);
 end;
 
-function tMultiTaskQueue.DeQueue: tMultiTaskItem;
+function tMultiTaskQueue.DeQueue(const thrd: tObject): tMultiTaskItem;
 var
   QueueItem: pQueueItem;
 begin
@@ -792,6 +792,16 @@ begin
       if fFirst = nil then
         fLast := nil;
       fCount -= 1;
+
+//      if (result.fMinimumAvailableMemoryGb = -1) or (result.fMinimumAvailableMemoryGb > uMemory.GetAvailableMemoryGb)
+//      then
+//      begin
+        tMultiTaskThread(thrd).Task := result;
+//      end else
+//      begin
+//         self.Enqueue(result,result.fflags);
+//         result := nil;
+//      end;
     end;
   finally
     LeaveCS(CS);

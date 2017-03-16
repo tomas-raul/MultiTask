@@ -44,7 +44,7 @@ type
     function getTask: tMultiTaskItem;
     procedure setTask(AValue: tMultiTaskItem);
     procedure _Working(const Task : tMultiTaskItem);
-    procedure _Sleeping;
+    procedure _Working_Done;
   public
     constructor Create(MultiTask: tMultiTask);
     destructor Destroy(); override;
@@ -89,6 +89,8 @@ type
     procedure setTThreadPriority(AValue: TThreadPriority);
     procedure Update_Thread_Configs;
     procedure On_New_Task_Enqeued;
+    procedure Log(const s : string);
+    procedure Exception(const Task : tMultiTaskItem; const e: Exception);
   protected
     fThreadList: TList;
 
@@ -101,10 +103,14 @@ type
     procedure Stop;
     procedure WaitFor;
 
+    function PriorityByID(const id : byte; const unique : boolean) : tMultitaskEnQueueFlags;
+
     procedure Enqueue(const proc: tTaskProc; const params: array of const; const flags : tMultitaskEnQueueFlags = [teLast]);
     procedure Enqueue(const method: tTaskMethod; const params: array of const; const flags : tMultitaskEnQueueFlags = [teLast]);
 
     function Thread_Running_Count : Byte;
+    function Thread_Running_Count_WO_Calling_Thread : Byte;
+    function Task_Running : String;
     function isTaskRunning(const Data: tMultiTaskItem): boolean;
 
     property Cores_Count: byte read getCores_Count;
@@ -137,7 +143,7 @@ implementation
 
 {$IFDEF MultiTaskLOG}
 uses
-  uLog_v4;
+  StrUtils;
 {$ENDIF}
 
 { tMultiTaskThread }
@@ -184,7 +190,7 @@ begin
   end;
 end;
 
-procedure tMultiTaskThread._Sleeping;
+procedure tMultiTaskThread._Working_Done;
 begin
   CS.Enter('Work done');
   try
@@ -287,6 +293,12 @@ begin
   end;
 end;
 
+procedure tMultiTask.Exception(const Task: tMultiTaskItem; const e: Exception);
+begin
+   if assigned(fOnException) then
+    fOnException(task,e);
+end;
+
 {$IFDEF Linux}
 const
   _SC_NPROCESSORS_ONLN = 83;
@@ -352,6 +364,12 @@ begin
    end;
 end;
 
+procedure tMultiTask.Log(const s: string);
+begin
+   if assigned(fOnLog) then
+     fOnLog(s);
+end;
+
 procedure tMultiTask.On_New_Task_Enqeued;
 var
   i: byte;
@@ -362,6 +380,18 @@ begin
     thrd := tMultiTaskThread(fThreadList[i]);
     thrd.Wake_Up_For_New_Work();
   end;
+end;
+
+function tMultiTask.PriorityByID(const id: byte; const unique: boolean): tMultitaskEnQueueFlags;
+begin
+   case id of
+   1 : result := [teFirst];
+   2 : result := [teHighPriority];
+   3 : result := [teNormalPriority];
+   4 : result := [teLowPriority];
+   5 : result := [teLast];
+   end;
+   if unique then result += [teUnique];
 end;
 
 procedure tMultiTask.setAsync_Run(AValue: boolean);
@@ -441,7 +471,36 @@ begin
   end;
 end;
 
+function tMultiTask.Task_Running: String;
+var
+  i: integer;
+  thrd: tMultiTaskThread;
+begin
+  result := '';
+  for i := 0 to fThreadList.Count - 1 do
+  begin
+    thrd := tMultiTaskThread(fThreadList[i]);
+    if thrd.Working then
+      result += thrd.Task.AsPascalSourceString + ifThen(TThread.CurrentThread.ThreadID = thrd.ThreadID,' - this Thread','') + #13#10;
+  end;
+end;
+
 function tMultiTask.Thread_Running_Count: Byte;
+var
+  i,cnt: integer;
+  thrd: tMultiTaskThread;
+begin
+  cnt := 0;
+  for i := 0 to fThreadList.Count - 1 do
+  begin
+    thrd := tMultiTaskThread(fThreadList[i]);
+    if thrd.Working then
+      Inc(cnt);
+  end;
+  result := cnt;
+end;
+
+function tMultiTask.Thread_Running_Count_WO_Calling_Thread: Byte;
 var
   i,cnt: integer;
   thrd: tMultiTaskThread;
@@ -460,11 +519,11 @@ procedure tMultiTask.Thread_Work(thrd: tMultiTaskThread);
 var
   task: tMultiTaskItem;
 begin
-  task := fTask_Queue.DeQueue;
+   task := fTask_Queue.DeQueue(thrd);
   while task <> nil do
   begin
     try
-      thrd._Working(Task);
+//      thrd._Working(Task);
       try
         if assigned(fOn_Before_Task_Method) then
           fOn_Before_Task_Method(task, thrd);
@@ -490,6 +549,7 @@ begin
         try
           if assigned(fOn_After_Task_Method) then
             fOn_After_Task_Method(task, thrd);
+          thrd._Working_Done();
         finally
         end;
       except
@@ -500,10 +560,10 @@ begin
         end;
       end;
     finally
-      thrd._Sleeping();
+      task.Free;
       RtlEventSetEvent(fAnyThreadDoneWork);
     end;
-    task := fTask_Queue.DeQueue;
+    task := fTask_Queue.DeQueue(thrd);
   end;
   thrd.Sleep_To_New_Work();
 end;
