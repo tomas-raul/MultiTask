@@ -106,7 +106,7 @@ type
     function PriorityByID(const id : byte; const unique : boolean) : tMultitaskEnQueueFlags;
 
     procedure Enqueue(const proc: tTaskProc; const params: array of const; const flags : tMultitaskEnQueueFlags = [teLast]);
-    procedure Enqueue(const method: tTaskMethod; const params: array of const; const flags : tMultitaskEnQueueFlags = [teLast]);
+    procedure Enqueue(const method: tTaskMethod; const params: array of const; const flags : tMultitaskEnQueueFlags = [teLast]; const obj : tObject = nil);
 
     function Thread_Running_Count : Byte;
     function Thread_Running_Count_WO_Calling_Thread : Byte;
@@ -263,7 +263,7 @@ begin
   inherited Destroy;
 end;
 
-procedure tMultiTask.Enqueue(const method: tTaskMethod; const params: array of const; const flags: tMultitaskEnQueueFlags);
+procedure tMultiTask.Enqueue(const method: tTaskMethod; const params: array of const; const flags: tMultitaskEnQueueFlags; const obj: tObject);
 var fl : tMultitaskEnQueueFlags;
 begin
   try
@@ -271,7 +271,7 @@ begin
   if not fPriorities_Enabled then
    fl -= [teFirst,teHighPriority,teNormalPriority,teLowPriority,teLast];
 
-  fTask_Queue.Enqueue(method, params, fl);
+  fTask_Queue.Enqueue(method, params, fl, obj);
   except
     on E:Exception do
      Log('Exception in Enqueue method : ' + E.Message);
