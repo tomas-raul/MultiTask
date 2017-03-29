@@ -12,6 +12,7 @@ This library using https://github.com/tomas-raul/CriticalSection
 - Priorities of task - you can add task priority - that's not thread priority, but place in the TaskQueue - tpFirst,tpHigh,tpNormal,tpLow,tpLast (default)<br/>
 - Priorities can be globaly disabled<br/>
 - Tasks is normal Threads<br/>
+- UPDATE - Precompiler is done - as alfa prerelease, but i use it in production (for test)
 
 
 <b>Some properties (planed, in near future) :</b><br/>
@@ -41,7 +42,7 @@ This library using https://github.com/tomas-raul/CriticalSection
   ...add another tasks to queue possible here...<br/>
   MultiTask.WaitFor;<br/>
 
-<b>Example of On_New_Work method :</b><br/>
+<b>Example of On_New_Work method : - or use Precompiler - which generate this method</b><br/>
 <br/>
 procedure tmyObject.On_New_Work(const method_name: string; const task: tMultiTaskItem);<br/>
 begin<br/>
@@ -66,6 +67,10 @@ end;<br/>
 use this :<br/>
 
 MultiTask.Enqueue(tTaskMethod(@Load_Image),[id,fn],[tpHigh]); // enqueue Load_Image method with param ID and filename with HighPriority<br/>
+
+or simply use Precompiler which generate methods f.e.:
+Load_Image_MT(const id : integer; const fn: string);
+and other methods as unique or with priority
 
 
  <b>What is :</b><br/>
