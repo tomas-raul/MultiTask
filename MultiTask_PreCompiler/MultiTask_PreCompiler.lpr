@@ -61,6 +61,7 @@ procedure InitParameters;
 begin
   MethodFlagName := getOptionS('mfn','Method-Flag-Name','compile methods tag with {gen_<Method-Flag-Name>}','MT');
   Class_Name := getOptionS('cn','Class-Name','to which class generated methods belongs, or class can be selected as class_<Method-Flag-Name> flag','');
+  if Class_Name <> '' then Class_Name := Class_Name + '.';
   MultiTaskerObjectname := getOptionS('mto','Multi-Task-Object','name of MultiTask object variable','MultiTask');
   MethodDefinitionFile := getOptionS('mdf','Method-Definition-File','when use .inc file for generated interface, this is filename for it, default <InputFileName>+_<Method-Flag-Name>_def.inc','');
   MethodImplementationFile := getOptionS('mif','Method-Implementation-File','when use .inc file for implementation, this is filename for it, default <InputFileName>+_<Method-Flag-Name>_impl.inc','');
@@ -183,7 +184,7 @@ var input : string;
     		repeat
                   cn := RE.Match[1];
                   Writeln('Found class name : ' + cn);
-                  Class_Name := cn;
+                  Class_Name := cn + '.';
     		until not RE.ExecNext;
     	end;
     finally
@@ -283,7 +284,7 @@ var i : integer;
     res : string;
     fn : string;
 begin
-   res := 'procedure ' + Class_Name + '.' + OnNewWorkMethodName + '(const method_name: string; const task: tMultiTaskItem);' + LineEnding;
+   res := 'procedure ' + Class_Name + OnNewWorkMethodName + '(const method_name: string; const task: tMultiTaskItem);' + LineEnding;
    res += 'begin' + LineEnding;
    res += '   case method_name of' + LineEnding + LineEnding;
    for i := low(methods) to high(methods) do
@@ -415,42 +416,42 @@ var i : integer;
 
     procedure AddMethods(const unique : boolean);
     begin
-      res += ' procedure ' + Class_Name + '.' + meth.Name + Default_Method_Suffix + ifThen(unique,'_Unique','') + '(' + par_str2 + ');' + LineEnding;
+      res += ' procedure ' + Class_Name + meth.Name + Default_Method_Suffix + ifThen(unique,'_Unique','') + '(' + par_str2 + ');' + LineEnding;
       res += ' begin' + LineEnding;
       res += '    ' + MultiTaskerObjectname+'.Enqueue(tTaskMethod(@' + meth.Name + '), [' + par_str + '], ['+GetEnumName(TypeInfo(tMultitaskEnQueueFlag),Ord(Default_Priority))+''+ifThen(unique,',teUnique','')+']);' + LineEnding;
       res += ' end;' + LineEnding;
 
       if Generate_Last_Priority_Methods then
       begin
-         res += ' procedure ' + Class_Name + '.' + meth.Name + Default_Method_Suffix + ifThen(unique,'_Unique','') +  '_Last(' + par_str2 + ');' + LineEnding;
+         res += ' procedure ' + Class_Name + meth.Name + Default_Method_Suffix + ifThen(unique,'_Unique','') +  '_Last(' + par_str2 + ');' + LineEnding;
          res += ' begin' + LineEnding;
          res += '    ' + MultiTaskerObjectname+'.Enqueue(tTaskMethod(@' + meth.Name + '), [' + par_str + '], [teLast'+ifThen(unique,',teUnique','')+']);' + LineEnding;
          res += ' end;' + LineEnding;
       end;
       if Generate_Low_Priority_Methods then
       begin
-         res += ' procedure ' + Class_Name + '.' + meth.Name + Default_Method_Suffix + ifThen(unique,'_Unique','') +  '_Low(' + par_str2 + ');' + LineEnding;
+         res += ' procedure ' + Class_Name + meth.Name + Default_Method_Suffix + ifThen(unique,'_Unique','') +  '_Low(' + par_str2 + ');' + LineEnding;
          res += ' begin' + LineEnding;
          res += '    ' + MultiTaskerObjectname+'.Enqueue(tTaskMethod(@' + meth.Name + '), [' + par_str + '], [teLowPriority'+ifThen(unique,',teUnique','')+']);' + LineEnding;
          res += ' end;' + LineEnding;
       end;
       if Generate_Normal_Priority_Methods then
       begin
-         res += ' procedure ' + Class_Name + '.' + meth.Name + Default_Method_Suffix + ifThen(unique,'_Unique','') +  '_Normal(' + par_str2 + ');' + LineEnding;
+         res += ' procedure ' + Class_Name + meth.Name + Default_Method_Suffix + ifThen(unique,'_Unique','') +  '_Normal(' + par_str2 + ');' + LineEnding;
          res += ' begin' + LineEnding;
          res += '    ' + MultiTaskerObjectname+'.Enqueue(tTaskMethod(@' + meth.Name + '), [' + par_str + '], [teNormalPriority'+ifThen(unique,',teUnique','')+']);' + LineEnding;
          res += ' end;' + LineEnding;
       end;
       if Generate_High_Priority_Methods then
       begin
-         res += ' procedure ' + Class_Name + '.' + meth.Name + Default_Method_Suffix + ifThen(unique,'_Unique','') +  '_High(' + par_str2 + ');' + LineEnding;
+         res += ' procedure ' + Class_Name + meth.Name + Default_Method_Suffix + ifThen(unique,'_Unique','') +  '_High(' + par_str2 + ');' + LineEnding;
          res += ' begin' + LineEnding;
          res += '    ' + MultiTaskerObjectname+'.Enqueue(tTaskMethod(@' + meth.Name + '), [' + par_str + '], [teHighPriority'+ifThen(unique,',teUnique','')+']);' + LineEnding;
          res += ' end;' + LineEnding;
       end;
       if Generate_ASAP_Priority_Methods then
       begin
-         res += ' procedure ' + Class_Name + '.' + meth.Name + Default_Method_Suffix + ifThen(unique,'_Unique','') +  '_ASAP(' + par_str2 + ');' + LineEnding;
+         res += ' procedure ' + Class_Name + meth.Name + Default_Method_Suffix + ifThen(unique,'_Unique','') +  '_ASAP(' + par_str2 + ');' + LineEnding;
          res += ' begin' + LineEnding;
          res += '    ' + MultiTaskerObjectname+'.Enqueue(tTaskMethod(@' + meth.Name + '), [' + par_str + '], [teFirst'+ifThen(unique,',teUnique','')+']);' + LineEnding;
          res += ' end;' + LineEnding;
