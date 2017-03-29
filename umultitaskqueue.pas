@@ -182,8 +182,11 @@ type
 implementation
 
 uses TypInfo,
-  uMultiTask,
-  uMemory;
+  uMultiTask
+{$IFDEF MemoryLimitPossibility}
+  ,uMemory
+{$ENDIF}
+  ;
 
 { tMultiTaskItem }
 

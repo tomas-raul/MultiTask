@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="10"/>
+    <BuildModes Active="Default"/>
+    <Units Count="18">
+      <Unit0>
+        <Filename Value="MultiTask_PreCompiler.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="77"/>
+        <CursorPos Y="106"/>
+        <UsageCount Value="73"/>
+        <Loaded Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="..\..\Utils\stringutils.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="StringUtils"/>
+        <EditorIndex Value="3"/>
+        <UsageCount Value="72"/>
+        <Loaded Value="True"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="..\..\Utils\ucmdline.pas"/>
+        <UnitName Value="uCmdLine"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="188"/>
+        <CursorPos Y="217"/>
+        <UsageCount Value="37"/>
+        <Loaded Value="True"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="..\umultitask.pas"/>
+        <UnitName Value="uMultiTask"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="455"/>
+        <CursorPos Y="486"/>
+        <UsageCount Value="10"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="..\umultitaskqueue.pas"/>
+        <UnitName Value="uMultiTaskQueue"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="90"/>
+        <CursorPos Y="123"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="..\..\utils.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="35" Y="8"/>
+        <UsageCount Value="5"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="C:\development\fpc\rtl\objpas\sysutils\sysstrh.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="209"/>
+        <CursorPos X="10" Y="104"/>
+        <UsageCount Value="6"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="C:\development\fpc\rtl\objpas\sysutils\sysstr.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="585"/>
+        <CursorPos X="2" Y="604"/>
+        <UsageCount Value="6"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="C:\development\fpc\rtl\inc\objpash.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="372"/>
+        <CursorPos X="14" Y="400"/>
+        <UsageCount Value="7"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="C:\development\fpc\packages\rtl-objpas\src\inc\strutils.pp"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="19"/>
+        <CursorPos X="53" Y="36"/>
+        <UsageCount Value="6"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="..\..\uiofile_v4.pas"/>
+        <UnitName Value="uIOFile_v4"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="2"/>
+        <CursorPos X="15" Y="30"/>
+        <UsageCount Value="6"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="C:\development\fpc\packages\regexpr\src\old\regexpr.pp"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="6"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="..\..\..\..\libraries\tPerlRegEx\pcre.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="727"/>
+        <CursorPos X="31" Y="739"/>
+        <UsageCount Value="6"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="..\..\..\..\libraries\tPerlRegEx\PerlRegEx.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="483"/>
+        <CursorPos X="15" Y="533"/>
+        <UsageCount Value="6"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="..\..\..\..\libraries\tPerlRegEx\PerlRegEx_new.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="19" Y="25"/>
+        <UsageCount Value="6"/>
+      </Unit14>
+      <Unit15>
+        <Filename Value="C:\development\fpc\packages\regexpr\src\regexpr.pas"/>
+        <UnitName Value="RegExpr"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="103"/>
+        <UsageCount Value="29"/>
+        <Loaded Value="True"/>
+      </Unit15>
+      <Unit16>
+        <Filename Value="C:\development\fpc\rtl\objpas\sysutils\finah.inc"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="10" Y="32"/>
+        <UsageCount Value="7"/>
+      </Unit16>
+      <Unit17>
+        <Filename Value="C:\development\fpc\rtl\objpas\sysutils\fina.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="335"/>
+        <CursorPos X="3" Y="318"/>
+        <UsageCount Value="6"/>
+      </Unit17>
+    </Units>
+    <JumpHistory Count="30" HistoryIndex="29">
+      <Position1>
+        <Filename Value="MultiTask_PreCompiler.lpr"/>
+        <Caret Line="413" TopLine="382"/>
+      </Position1>
+      <Position2>
+        <Filename Value="MultiTask_PreCompiler.lpr"/>
+        <Caret Line="414" TopLine="382"/>
+      </Position2>
+      <Position3>
+        <Filename Value="MultiTask_PreCompiler.lpr"/>
+        <Caret Line="417" TopLine="382"/>
+      </Position3>
+      <Position4>
+        <Filename Value="MultiTask_PreCompiler.lpr"/>
+        <Caret Line="419" TopLine="382"/>
+      </Position4>
+      <Position5>
+        <Filename Value="MultiTask_PreCompiler.lpr"/>
+        <Caret Line="420" TopLine="382"/>
+      </Position5>
+      <Position6>
+        <Filename Value="MultiTask_PreCompiler.lpr"/>
+        <Caret Line="421" TopLine="382"/>
+      </Position6>
+      <Position7>
+        <Filename Value="MultiTask_PreCompiler.lpr"/>
+        <Caret Line="422" TopLine="382"/>
+      </Position7>
+      <Position8>
+        <Filename Value="MultiTask_PreCompiler.lpr"/>
+        <Caret Line="423" TopLine="382"/>
+      </Position8>
+      <Position9>
+        <Filename Value="MultiTask_PreCompiler.lpr"/>
+        <Caret Line="425" TopLine="382"/>
+      </Position9>
+      <Position10>
+        <Filename Value="MultiTask_PreCompiler.lpr"/>
+        <Caret Line="427" TopLine="411"/>
+      </Position10>
+      <Position11>
+        <Filename Value="MultiTask_PreCompiler.lpr"/>
+        <Caret Line="409" TopLine="379"/>
+      </Position11>
+      <Position12>
+        <Filename Value="MultiTask_PreCompiler.lpr"/>
+        <Caret Line="410" TopLine="379"/>
+      </Position12>
+      <Position13>
+        <Filename Value="MultiTask_PreCompiler.lpr"/>
+        <Caret Line="409" TopLine="379"/>
+      </Position13>
+      <Position14>
+        <Filename Value="MultiTask_PreCompiler.lpr"/>
+        <Caret Line="410" TopLine="379"/>
+      </Position14>
+      <Position15>
+        <Filename Value="MultiTask_PreCompiler.lpr"/>
+        <Caret Line="413" TopLine="379"/>
+      </Position15>
+      <Position16>
+        <Filename Value="MultiTask_PreCompiler.lpr"/>
+        <Caret Line="414" TopLine="379"/>
+      </Position16>
+      <Position17>
+        <Filename Value="MultiTask_PreCompiler.lpr"/>
+        <Caret Line="417" TopLine="379"/>
+      </Position17>
+      <Position18>
+        <Filename Value="MultiTask_PreCompiler.lpr"/>
+        <Caret Line="419" TopLine="379"/>
+      </Position18>
+      <Position19>
+        <Filename Value="MultiTask_PreCompiler.lpr"/>
+        <Caret Line="420" TopLine="379"/>
+      </Position19>
+      <Position20>
+        <Filename Value="MultiTask_PreCompiler.lpr"/>
+        <Caret Line="421" TopLine="379"/>
+      </Position20>
+      <Position21>
+        <Filename Value="MultiTask_PreCompiler.lpr"/>
+        <Caret Line="422" TopLine="379"/>
+      </Position21>
+      <Position22>
+        <Filename Value="MultiTask_PreCompiler.lpr"/>
+        <Caret Line="423" TopLine="379"/>
+      </Position22>
+      <Position23>
+        <Filename Value="MultiTask_PreCompiler.lpr"/>
+        <Caret Line="425" TopLine="394"/>
+      </Position23>
+      <Position24>
+        <Filename Value="MultiTask_PreCompiler.lpr"/>
+        <Caret Line="422" Column="38" TopLine="398"/>
+      </Position24>
+      <Position25>
+        <Filename Value="MultiTask_PreCompiler.lpr"/>
+        <Caret Line="424" Column="107" TopLine="395"/>
+      </Position25>
+      <Position26>
+        <Filename Value="MultiTask_PreCompiler.lpr"/>
+        <Caret Line="459" Column="115" TopLine="413"/>
+      </Position26>
+      <Position27>
+        <Filename Value="MultiTask_PreCompiler.lpr"/>
+        <Caret Line="426" TopLine="412"/>
+      </Position27>
+      <Position28>
+        <Filename Value="MultiTask_PreCompiler.lpr"/>
+        <Caret Line="510" Column="12" TopLine="353"/>
+      </Position28>
+      <Position29>
+        <Filename Value="MultiTask_PreCompiler.lpr"/>
+        <Caret Line="73" TopLine="71"/>
+      </Position29>
+      <Position30>
+        <Filename Value="MultiTask_PreCompiler.lpr"/>
+        <Caret Line="31" TopLine="2"/>
+      </Position30>
+    </JumpHistory>
+  </ProjectSession>
+  <Debugging>
+    <BreakPoints Count="4">
+      <Item1>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="MultiTask_PreCompiler.lpr"/>
+        <Line Value="93"/>
+      </Item1>
+      <Item2>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="..\..\Utils\ucmdline.pas"/>
+        <Line Value="221"/>
+      </Item2>
+      <Item3>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="..\..\..\..\libraries\tPerlRegEx\pcre.pas"/>
+        <Line Value="1123"/>
+      </Item3>
+      <Item4>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="MultiTask_PreCompiler.lpr"/>
+        <Line Value="267"/>
+      </Item4>
+    </BreakPoints>
+    <Watches Count="8">
+      <Item1>
+        <Expression Value="cfg"/>
+      </Item1>
+      <Item2>
+        <Expression Value="option"/>
+      </Item2>
+      <Item3>
+        <Expression Value="result"/>
+      </Item3>
+      <Item4>
+        <Expression Value="str"/>
+      </Item4>
+      <Item5>
+        <Expression Value="ott"/>
+      </Item5>
+      <Item6>
+        <Expression Value="ottl"/>
+      </Item6>
+      <Item7>
+        <Expression Value="mn"/>
+      </Item7>
+      <Item8>
+        <Expression Value="params"/>
+      </Item8>
+    </Watches>
+  </Debugging>
+</CONFIG>

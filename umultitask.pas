@@ -481,7 +481,11 @@ begin
   begin
     thrd := tMultiTaskThread(fThreadList[i]);
     if thrd.Working then
-      result += thrd.Task.AsPascalSourceString + ifThen(TThread.CurrentThread.ThreadID = thrd.ThreadID,' - this Thread','') + #13#10;
+    begin
+      if TThread.CurrentThread.ThreadID = thrd.ThreadID then
+      result += thrd.Task.AsPascalSourceString + ' - this Thread' + #13#10 else
+      result += thrd.Task.AsPascalSourceString + #13#10;
+    end;
   end;
 end;
 
