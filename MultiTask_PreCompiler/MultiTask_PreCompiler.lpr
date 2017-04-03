@@ -1,6 +1,7 @@
 program MultiTask_PreCompiler;
 uses
    sysutils,
+   classes,
    strutils,
    typinfo,
    fileutil,
@@ -32,6 +33,8 @@ var
   OnNewWorkMethodFileName : string; // name of OnNewWork filename (could be .inc or '', when '' then ) - defaults to On_New_Work
   MethodDefinitionFile : string; // where to place md. when '' then in source file on place MT_def
   MethodImplementationFile : string; // where to place mi. when '' then in source file on place MT_impl
+  Type_Definition_File : string;
+  Type_Definition : tStringList;
 
   Class_Name : string; // name of class for which we generate, or class can be selected as class_MT flag
 
@@ -69,6 +72,11 @@ begin
   OnNewWorkMethodName := getOptionS('onw','On-New-Work-Method-Name','Name of main worker method - this method is generated and runs adequate method','On_New_Work');
   Default_Method_Suffix := getOptionS('dms','Default-Method-Suffix','default suffix for generated multi task methods f.e.: Write->Write_<Default-Method-Suffix>','_MT');
 
+  Type_Definition_File := getOptionS('tdf','Type-Definition-File','file with info about object and interfaces','MultiTask_Type_Definition.cfg');
+  Type_Definition := tStringList.Create;
+  if FileExists(Type_Definition_File) then
+   Type_Definition.LoadFromFile(Type_Definition_File);
+
   Generate_Main_Methods := getOptionB('dgmm','Disable-Main-Methods','generate main multitask invoke methods', true);
   GenerateUniqueMethods := getOptionB('gum','Unique-Methods','generate unique multitask invoke methods', false);
   case lowercase(getOptionS('dp','Default-Priority','default priority for enqueuing','NORMAL')) of
@@ -102,6 +110,8 @@ procedure WriteParameters;
 var tp : string;
 begin
   Writeln('Input file                       : ' + InputFileName);
+  Writeln('Type definition file             : ' + ifthen(FileExists(Type_Definition_File),Type_Definition_File,''));
+
   Writeln('Method definition .inc file      : ' + MethodDefinitionFile);
   Writeln('Method implementation .inc file  : ' + MethodImplementationFile);
   Writeln;
@@ -283,6 +293,7 @@ var i : integer;
     par_str : string;
     res : string;
     fn : string;
+    typ : string;
 begin
    res := 'procedure ' + Class_Name + OnNewWorkMethodName + '(const method_name: string; const task: tMultiTaskItem);' + LineEnding;
    res += 'begin' + LineEnding;
@@ -296,6 +307,12 @@ begin
          for p := low(meth.Params) to high(meth.Params) do
          begin
             par := meth.Params[p];
+            typ := Type_Definition.Values[par.typ];
+            if typ <> '' then
+            begin
+               par_str += ' '+par.typ+'(task.'+typ+'['+IntToStr(p+1)+']), ';
+            end else
+            begin
             case lowercase(par.typ) of
 {
 property I[const id: integer]: integer read getInteger;
@@ -318,10 +335,12 @@ property I64[const id: integer]: int64 read getInt64;
                 'byte',
                 'word' : par_str += ' task.I['+IntToStr(p+1)+'], ';
 
+
                 else
                   if lowercase(copy(par.typ,1,1)) = 'i' then
                   par_str += ' '+par.typ+'(task.int['+IntToStr(p+1)+']), ' else
                   par_str += ' '+par.typ+'(task.O['+IntToStr(p+1)+']), ';
+            end;
             end;
          end;
          par_str := copy(par_str,1,length(par_str)-2);

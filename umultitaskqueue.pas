@@ -108,18 +108,19 @@ type
     property nextI64: int64 read getnextInt64;
 
     property I[const id: integer]: integer read getInteger;
-    property int[const id: integer]: pointer read getinterface;
-    property ParBoolean[const id: integer]: boolean read getboolean;
-    property ParChar[const id: integer]: char read getchar;
-    property ParExtended[const id: integer]: extended read getExtended;
+    property B[const id: integer]: boolean read getboolean;
     property S[const id: integer]: string read getString;
-    property ParPChar[const id: integer]: PChar read getPChar;
     property O[const id: integer]: TObject read gettObject;
+    property E[const id: integer]: extended read getExtended;
+    property I64[const id: integer]: int64 read getInt64;
+
+    property int[const id: integer]: pointer read getinterface;
+    property ParChar[const id: integer]: char read getchar;
+    property ParPChar[const id: integer]: PChar read getPChar;
     property ParClass[const id: integer]: tClass read gettClass;
     property ParAnsiString[const id: integer]: ansistring read getAnsiString;
     property ParCurrency[const id: integer]: currency read getCurrency;
     property ParVariant[const id: integer]: variant read getVariant;
-    property I64[const id: integer]: int64 read getInt64;
 
   published
     property Name: string read fName write fName;
@@ -329,7 +330,7 @@ end;
 
 function tMultiTaskItem.getnextB: boolean;
 begin
-  Result := self.ParBoolean[fparamid];
+  Result := self.B[fparamid];
   Inc(fparamid);
 end;
 
@@ -353,7 +354,7 @@ end;
 
 function tMultiTaskItem.getnextExtended: extended;
 begin
-  Result := self.ParExtended[fparamid];
+  Result := self.E[fparamid];
   Inc(fparamid);
 end;
 
